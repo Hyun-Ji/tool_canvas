@@ -2,7 +2,6 @@
 var socket;
 var selectShape;
 var c; //canvas - HTML의 캔버스
-var cs; //casvasSVG
 var ctx; //canvasContext
 
 var save_src; //dataURL
@@ -150,6 +149,35 @@ function resizeCanvas(){
         ctx.drawImage(img, 0, 0);
     };
     shape.setShape();
+}
+
+function localandS3save(){
+    var now = new Date();
+    var date = (now.getYear()-100).toString() + now.getMonth().toString() + now.getDate().toString()+ "-" + now.getHours() + now.getMinutes() + now.getSeconds();
+    var filename = chamber + " " + date + ".png"; //file name = 챔버명 + 날짜 + .png
+
+    c.toBlob(function(blob) {
+        saveAs(blob, filename); }, "image/png"); //save at local(제이쿼리 이용)
+
+    var dataUrl = c.toDataURL("image/png");
+    var blobData = dataURItoBlob(dataUrl);
+    var params = {Key: fileName, ContentType: "image/png", Body: blobData};
+    bucket.upload(params, function (err, data) {
+        console.log(data);
+        console.log(err ? 'ERROR!' : 'UPLOADED.');
+    });
+    //save at s3
+    //알겠으면 위랑 합치기(data blob굳이 두번 안하게...)
+    //이거 또 클라이언트에선 바로 못하려나...
+}
+
+function dataURItoBlob(dataURI) {
+    var binary = atob(dataURI.split(',')[1]);
+    var array = [];
+    for(var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i));
+    }
+    return new Blob([new Uint8Array(array)], {type: 'image/png'});
 }
 
 function tools(value){
