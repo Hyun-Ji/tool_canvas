@@ -52,6 +52,7 @@ $(document).ready(function(){
 
     //기본 모양 색상 설정
     shape.setShape();
+    tool = "pen";
 
     //clear 버튼에 이벤트 핸들러 등록
     $('#clear').bind('click',draw.clear);
@@ -250,9 +251,6 @@ function temptestdragableimg(fileURL){
         imageHeight = img.height;
 
         console.log(imageWidth + " , " + imageHeight);
-
-        //image resizing soon...
-
         div.backgroundImage = dataURL;
         //console.log(img.width);
     };
@@ -292,7 +290,6 @@ var shape = {
 
     //변경
     setShape : function(color,width){
-        tool = "pen";
         if(color != null)
             this.color = color;
         if(width != null)
@@ -301,7 +298,7 @@ var shape = {
         ctx.strokeStyle = this.color;
         ctx.lineWidth = this.width;
     }
-}
+};
 //그리기
 var draw = {
     drawing : null,
@@ -361,6 +358,7 @@ var draw = {
         if(data.type == 'end'){
             console.log("서버로부터 그려짐");
             cPush();
+            shape.change();
         }
 
         if(data.type == 'clear'){
@@ -373,7 +371,7 @@ var draw = {
             ctx.clearRect(data.x-10, data.y-10, 20, 20);
         }
     }
-}
+};
 
 function loadfromServer(data){
     if(data.type == 'saved') { //저장한 것을 불러오는 경우
